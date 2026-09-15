@@ -1,20 +1,520 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Retrogames Score</title>
-<style>
-:root{--bg:#10131c;--panel:#1b2130;--panel2:#252d40;--text:#f4f6fb;--muted:#aeb7c9;--accent:#72d6ff;--border:#39445c}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;line-height:1.45}main{max-width:1100px;margin:auto;padding:28px 18px 50px}h1{margin:0 0 8px;font-size:clamp(1.7rem,4vw,2.5rem)}.intro{color:var(--muted);margin-top:0}.method{background:#141a26;border-left:3px solid var(--accent);border-radius:9px;padding:13px 15px;color:#dce6f7;margin:14px 0 18px}.panel,.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px}.panel{margin:18px 0}.filters{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}label{display:grid;gap:6px;font-weight:700}input,select,button{font:inherit;border-radius:9px;padding:11px 13px;border:1px solid var(--border)}input,select{background:#0d1119;color:var(--text);min-width:0}button{background:var(--accent);color:#071019;font-weight:700;cursor:pointer}.secondary{background:var(--panel2);color:var(--text);margin-top:14px}.status{color:var(--muted);font-size:.92rem;margin-top:10px}.cards{display:grid;gap:16px}.card-head{display:flex;gap:16px}.cover{width:118px;height:150px;object-fit:cover;border-radius:8px;background:#0b0e15;flex:none}.title{margin:0 0 4px;font-size:1.25rem}.meta{color:var(--muted);font-size:.92rem}.scores{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.score{background:var(--panel2);padding:9px;border-radius:9px;text-align:center}.score small{display:block;color:var(--muted)}.score strong{font-size:1.25rem}.note,.reasoning{margin-top:14px;padding:12px;background:#141a26;border-radius:9px;border-left:3px solid var(--accent)}.reasoning h3{font-size:1rem;margin:0 0 7px}.reasoning p{margin:0}.hidden{display:none}.footer{text-align:center;color:var(--muted);margin-top:30px;font-size:.9rem}@media(max-width:700px){.filters{grid-template-columns:1fr}.card-head{flex-direction:column}.cover{width:100%;height:210px}.scores{grid-template-columns:repeat(2,1fr)}}
-</style></head><body><main>
-<h1 id="pageTitle">Retrogames Score</h1>
-<p class="intro">Busca un juego por palabra clave y selecciona la plataforma.</p>
-<div class="method"><strong>Sobre las puntuaciones:</strong> Las valoraciones se basan principalmente en la percepción popular de los jugadores y en el consenso de la comunidad retro. Se tienen en cuenta la calidad técnica, la música, el control, el diseño de juego y las particularidades de cada versión regional. No pretenden sustituir una crítica individual, sino ofrecer una referencia coherente para comparar títulos de distintas plataformas.</div>
-<section class="panel"><div class="filters"><label for="search">Nombre del juego<input id="search" type="search" placeholder="Ej.: Sonic, Mario, Zelda..."></label><label for="platform">Plataforma<select id="platform"><option value="megadrive">Mega Drive (PAL)</option><option value="snes" disabled>Super Nintendo (próximamente)</option></select></label><button id="searchBtn">Buscar</button></div><div class="status" id="status">Cargando catálogo…</div></section>
-<section id="results" class="cards"></section><p class="footer">Creado por FuchikomaRed</p>
-</main><script>
-const platforms={megadrive:{label:'Retrogames Score',file:'megadrive_scoring.csv'},snes:{label:'Retrogames Score',file:'snes_scoring.csv'}};let games=[];const $=id=>document.getElementById(id);
-function parseCSV(text){const rows=[];let row=[],cell='',quoted=false;for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];if(c==='"'&&quoted&&n==='"'){cell+='"';i++;continue}if(c==='"'){quoted=!quoted;continue}if(c===';'&&!quoted){row.push(cell);cell='';continue}if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&n==='\n')i++;row.push(cell);if(row.some(x=>x.trim()))rows.push(row);row=[];cell='';continue}cell+=c}if(cell||row.length){row.push(cell);rows.push(row)}const headers=rows.shift().map(x=>x.replace(/^\uFEFF/,''));return rows.map(r=>Object.fromEntries(headers.map((h,i)=>[h,(r[i]??'').trim()])))}
-function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}function score(v){return v?String(v).replace(',', '.'):'—'}function description(g){return g.description_es||'Descripción no disponible en castellano.'}
-function render(list){$('status').textContent=list.length?`${list.length} resultado(s) encontrado(s).`:'No hay resultados.';$('results').innerHTML=list.map((g,i)=>`<article class="card"><div class="card-head">${g.cover_art_url?`<img class="cover" src="${esc(g.cover_art_url)}" alt="Portada de ${esc(g.title)}" loading="lazy">`:''}<div><h2 class="title">${esc(g.title)}</h2><div class="meta">${esc(g.released)} · ${esc(g.genre)}</div><p>${esc(description(g))}</p></div></div><div class="scores"><div class="score"><small>Gráficos PAL</small><strong>${score(g.graphics_pal)}</strong></div><div class="score"><small>Música PAL</small><strong>${score(g.music_pal)}</strong></div><div class="score"><small>Jugabilidad PAL</small><strong>${score(g.gameplay_pal)}</strong></div><div class="score"><small>Total PAL</small><strong>${score(g.total_pal)}</strong></div></div>${g.notes_pal_ntsc_j?`<div class="note"><strong>Nota PAL / NTSC-J:</strong> ${esc(g.notes_pal_ntsc_j)}</div>`:''}${g.score_reasoning?`<button class="secondary" data-reason="${i}">Ver motivos de la puntuación</button><div class="reasoning hidden" id="reason-${i}"><h3>Motivos de la puntuación</h3><p>${esc(g.score_reasoning)}</p></div>`:''}</article>`).join('');document.querySelectorAll('[data-reason]').forEach(b=>b.onclick=()=>{const box=$('reason-'+b.dataset.reason);box.classList.toggle('hidden');b.textContent=box.classList.contains('hidden')?'Ver motivos de la puntuación':'Ocultar motivos de la puntuación'})}
-async function load(){const p=platforms[$('platform').value];$('results').innerHTML='';$('status').textContent='Cargando catálogo…';try{const r=await fetch(p.file,{cache:'no-cache'});if(!r.ok)throw Error();games=parseCSV(await r.text());$('status').textContent=`Catálogo cargado: ${games.length} títulos.`}catch(e){console.error(e);$('status').textContent=`No se pudo cargar ${p.file}.`}}
-function search(){const q=$('search').value.trim().toLowerCase();if(!q){$('results').innerHTML='';$('status').textContent=`Catálogo cargado: ${games.length} títulos.`;return}render(games.filter(g=>Object.values(g).some(v=>String(v).toLowerCase().includes(q))).slice(0,50))}$('searchBtn').onclick=search;$('search').onkeydown=e=>{if(e.key==='Enter')search()};$('platform').onchange=load;load();
-</script></body></html>
+  <meta charset="UTF-8" />
+  <title>Retro Consolas – Top Games PAL</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0f1115;
+      --card: #171a21;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #7c3aed;
+      --accent-2: #22d3ee;
+      --border: #2b303b;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --err: #ef4444;
+      --md: #f59e0b;
+      --snes: #7c3aed;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      padding: 24px 16px 8px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(124,58,237,0.08), transparent);
+    }
+    h1 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      letter-spacing: 0.2px;
+    }
+    .sub {
+      color: var(--muted);
+      font-size: 13px;
+      max-width: 900px;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: #0b0d12;
+      position: sticky;
+      top: 0;
+      z-index: 6;
+    }
+    .tab {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 13px;
+      user-select: none;
+    }
+    .tab.active {
+      border-color: var(--accent);
+      background: #1f2330;
+      color: #fff;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: #0b0d12;
+      position: sticky;
+      top: 56px;
+      z-index: 5;
+    }
+    .controls input, .controls select, .controls button {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 13px;
+      outline: none;
+    }
+    .controls input { min-width: 220px; flex: 1 1 220px; }
+    .controls select { min-width: 160px; }
+    .controls button {
+      cursor: pointer;
+      border-color: #3b4150;
+    }
+    .container {
+      padding: 16px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 180px;
+    }
+    .card h3 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.25;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #222633;
+      border: 1px solid #2f3542;
+      font-size: 11px;
+      color: #cfd4df;
+    }
+    .score {
+      margin-left: auto;
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .score.md { color: var(--md); }
+    .score.snes { color: var(--accent-2); }
+    .desc {
+      font-size: 12px;
+      color: #c9ced6;
+      line-height: 1.35;
+      flex: 1 1 auto;
+    }
+    .reason {
+      font-size: 11px;
+      color: #9aa3b2;
+      border-top: 1px dashed #2a3040;
+      padding-top: 6px;
+      margin-top: 4px;
+    }
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 40px 10px;
+      font-size: 14px;
+    }
+    .status-bar {
+      font-size: 12px;
+      color: var(--muted);
+      padding: 6px 16px;
+      border-top: 1px solid var(--border);
+      background: #0b0d12;
+    }
+    .console-badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid #2f3542;
+      background: #222633;
+      color: #cfd4df;
+      margin-left: 6px;
+    }
+    .console-badge.md { color: var(--md); }
+    .console-badge.snes { color: var(--accent-2); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Retro Consolas – Top Games PAL</h1>
+    <div class="sub">
+      CatÃ¡logo consolidado de juegos PAL de Mega Drive y Super Nintendo.
+      Los datos se cargan desde <code>megadrive_scoring.csv</code> y <code>snes_scoring.csv</code>.
+    </div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" data-console="md">Mega Drive</div>
+    <div class="tab" data-console="snes">Super Nintendo</div>
+  </div>
+
+  <div class="controls">
+    <input id="searchInput" type="text" placeholder="Buscar por tÃ¬tulo, gÃ©nero, descripciÃ³nâ¦» />
+    <select id="genreFilter">
+      <option value="">Todos los gÃ©neros</option>
+    </select>
+    <select id="sortSelect">
+      <option value="total_desc">Orden: PuntuaciÃ³n (mayor a menor)</option>
+      <option value="total_asc">Orden: PuntuaciÃ³n (menor a mayor)</option>
+      <option value="released_asc">Orden: Lanzamiento (antiguo â reciente)</option>
+      <option value="released_desc">Orden: Lanzamiento (reciente â antiguo)</option>
+      <option value="title_asc">Orden: TÃ¬tulo (A â Z)</option>
+      <option value="title_desc">Orden: TÃ¬tulo (Z â A)</option>
+    </select>
+    <button id="resetBtn">Resetear filtros</button>
+  </div>
+
+  <div class="container">
+    <div id="grid" class="grid"></div>
+    <div id="emptyState" class="empty" style="display:none">
+      No se encontraron juegos con estos filtros.
+    </div>
+  </div>
+
+  <div class="status-bar" id="statusBar">
+    Cargando datosâ¦»
+  </div>
+
+  <script>
+    // Rutas de los CSV (deben estar en la misma carpeta que este HTML)
+    const MD_CSV = "megadrive_scoring.csv";
+    const SNES_CSV = "snes_scoring.csv";
+
+    const grid = document.getElementById("grid");
+    const emptyState = document.getElementById("emptyState");
+    const statusBar = document.getElementById("statusBar");
+    const searchInput = document.getElementById("searchInput");
+    const genreFilter = document.getElementById("genreFilter");
+    const sortSelect = document.getElementById("sortSelect");
+    const resetBtn = document.getElementById("resetBtn");
+    const tabs = document.querySelectorAll(".tab");
+
+    let mdRows = [];
+    let snesRows = [];
+    let currentConsole = "md"; // 'md' o 'snes'
+    let allGenres = new Set();
+
+    function parseCSV(text) {
+      const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+      if (lines.length === 0) return [];
+      const header = splitCSVLine(lines[0], ";");
+      const rows = [];
+      for (let i = 1; i < lines.length; i++) {
+        const cells = splitCSVLine(lines[i], ";");
+        if (cells.length < header.length) continue;
+        const obj = {};
+        for (let j = 0; j < header.length; j++) {
+          const key = header[j].trim();
+          obj[key] = (cells[j] ?? "").trim();
+        }
+        rows.push(obj);
+      }
+      return rows;
+    }
+
+    function splitCSVLine(line, sep = ";") {
+      const result = [];
+      let cur = "";
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQuotes && line[i + 1] === '"') {
+            cur += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (ch === sep && !inQuotes) {
+          result.push(cur);
+          cur = "";
+        } else {
+          cur += ch;
+        }
+      }
+      result.push(cur);
+      return result;
+    }
+
+    function normalizeRow(row, consoleType) {
+      // Adapta las claves segÃºn tu CSV real
+      const title =
+        row["canonical_pal_title"] ||
+        row["title"] ||
+        "";
+      const released = row["released"] || "";
+      const genre = row["genre"] || "";
+      const total = parseFloat(row["total_pal"] || row["total"] || "0");
+      const graphics = parseFloat(row["graphics_pal"] || row["graphics"] || "0");
+      const music = parseFloat(row["music_pal"] || row["music"] || "0");
+      const gameplay = parseFloat(row["gameplay_pal"] || row["gameplay"] || "0");
+      const notes = row["notes_pal_ntsc_j"] || row["notes"] || "";
+      const variants = row["name_variants"] || "";
+      const reasoning = row["score_reasoning"] || "";
+      const desc = row["description_es"] || row["description"] || "";
+
+      return {
+        console: consoleType,
+        title,
+        released,
+        genre,
+        total,
+        graphics,
+        music,
+        gameplay,
+        notes,
+        variants,
+        reasoning,
+        desc,
+        raw: row
+      };
+    }
+
+    function renderGenres() {
+      const opts = [""];
+      const sorted = Array.from(allGenres).sort((a, b) => a.localeCompare(b));
+      for (const g of sorted) {
+        if (!g) continue;
+        opts.push(g);
+      }
+      genreFilter.innerHTML = opts
+        .map(g => `<option value="${g}">${g || "Todos los gÃ©neros"}</option>`)
+        .join("");
+    }
+
+    function getCurrentRows() {
+      return currentConsole === "md" ? mdRows : snesRows;
+    }
+
+    function applyFiltersAndSort() {
+      const rows = getCurrentRows();
+      const q = searchInput.value.toLowerCase();
+      const g = genreFilter.value;
+      const sort = sortSelect.value;
+
+      let filtered = rows.filter(r => {
+        const inGenre = !g || r.genre === g;
+        const text =
+          (r.title + " " + r.genre + " " + r.desc + " " + r.notes + " " + r.variants).toLowerCase();
+        const inSearch = !q || text.includes(q);
+        return inGenre && inSearch;
+      });
+
+      switch (sort) {
+        case "total_asc":
+          filtered.sort((a, b) => a.total - b.total || a.title.localeCompare(b.title));
+          break;
+        case "total_desc":
+          filtered.sort((a, b) => b.total - a.total || a.title.localeCompare(b.title));
+          break;
+        case "released_asc":
+          filtered.sort((a, b) => (a.released || "").localeCompare(b.released || "") || a.title.localeCompare(b.title));
+          break;
+        case "released_desc":
+          filtered.sort((a, b) => (b.released || "").localeCompare(a.released || "") || a.title.localeCompare(b.title));
+          break;
+        case "title_asc":
+          filtered.sort((a, b) => a.title.localeCompare(b.title));
+          break;
+        case "title_desc":
+          filtered.sort((a, b) => b.title.localeCompare(a.title));
+          break;
+      }
+
+      renderGrid(filtered);
+    }
+
+    function renderGrid(rows) {
+      grid.innerHTML = "";
+      if (rows.length === 0) {
+        emptyState.style.display = "block";
+        const label = currentConsole === "md" ? "Mega Drive" : "Super Nintendo";
+        statusBar.textContent = `${label}: 0 juegos mostrados.`;
+        return;
+      }
+      emptyState.style.display = "none";
+      const label = currentConsole === "md" ? "Mega Drive" : "Super Nintendo";
+      statusBar.textContent = `${label}: ${rows.length} juegos mostrados de ${rows.length}.`;
+
+      const frag = document.createDocumentFragment();
+      for (const r of rows) {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const head = document.createElement("div");
+        head.style.display = "flex";
+        head.style.alignItems = "center";
+        head.style.gap = "6px";
+
+        const h3 = document.createElement("h3");
+        h3.textContent = r.title || "(sin tÃ¬tulo)";
+        head.appendChild(h3);
+
+        const score = document.createElement("div");
+        score.className = "score " + (r.console === "md" ? "md" : "snes");
+        score.textContent = `PAL ${Number.isFinite(r.total) ? r.total.toFixed(1) : "0.0"}`;
+        head.appendChild(score);
+
+        const consoleBadge = document.createElement("span");
+        consoleBadge.className = "console-badge " + (r.console === "md" ? "md" : "snes");
+        consoleBadge.textContent = r.console === "md" ? "Mega Drive" : "SNES";
+        head.appendChild(consoleBadge);
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+        if (r.released) {
+          const year = (r.released || "").slice(0, 4);
+          if (year && year.length === 4) {
+            const y = document.createElement("span");
+            y.className = "pill";
+            y.textContent = year;
+            meta.appendChild(y);
+          }
+        }
+        if (r.genre) {
+          const g = document.createElement("span");
+          g.className = "pill";
+          g.textContent = r.genre;
+          meta.appendChild(g);
+        }
+        if (r.notes) {
+          const n = document.createElement("span");
+          n.className = "pill";
+          n.textContent = "PAL/NTSC-J";
+          n.title = r.notes;
+          meta.appendChild(n);
+        }
+
+        const desc = document.createElement("div");
+        desc.className = "desc";
+        desc.textContent = r.desc || "";
+
+        const reason = document.createElement("div");
+        reason.className = "reason";
+        reason.textContent = r.reasoning || "";
+
+        card.appendChild(head);
+        card.appendChild(meta);
+        card.appendChild(desc);
+        card.appendChild(reason);
+        frag.appendChild(card);
+      }
+      grid.appendChild(frag);
+    }
+
+    async function loadConsoleData() {
+      statusBar.textContent = "Cargando datos de Mega Drive y Super Nintendoâ¦»";
+
+      const [mdRes, snesRes] = await Promise.allSettled([
+        fetch(MD_CSV).then(r => {
+          if (!r.ok) throw new Error("MD HTTP " + r.status);
+          return r.text();
+        }),
+        fetch(SNES_CSV).then(r => {
+          if (!r.ok) throw new Error("SNES HTTP " + r.status);
+          return r.text();
+        })
+      ]);
+
+      if (mdRes.status === "fulfilled") {
+        const raw = parseCSV(mdRes.value);
+        mdRows = raw.map(r => normalizeRow(r, "md")).filter(r => r.title);
+        for (const r of mdRows) {
+          if (r.genre) allGenres.add(r.genre);
+        }
+      } else {
+        console.warn("Error cargando Mega Drive:", mdRes.reason);
+        mdRows = [];
+      }
+
+      if (snesRes.status === "fulfilled") {
+        const raw = parseCSV(snesRes.value);
+        snesRows = raw.map(r => normalizeRow(r, "snes")).filter(r => r.title);
+        for (const r of snesRows) {
+          if (r.genre) allGenres.add(r.genre);
+        }
+      } else {
+        console.warn("Error cargando Super Nintendo:", snesRes.reason);
+        snesRows = [];
+      }
+
+      renderGenres();
+      applyFiltersAndSort();
+    }
+
+    function switchConsole(consoleType) {
+      currentConsole = consoleType;
+      tabs.forEach(t => {
+        t.classList.toggle("active", t.dataset.console === consoleType);
+      });
+      // Resetear filtros al cambiar de consola (opcional)
+      searchInput.value = "";
+      genreFilter.value = "";
+      sortSelect.value = "total_desc";
+      applyFiltersAndSort();
+    }
+
+    tabs.forEach(t => {
+      t.addEventListener("click", () => switchConsole(t.dataset.console));
+    });
+
+    searchInput.addEventListener("input", applyFiltersAndSort);
+    genreFilter.addEventListener("change", applyFiltersAndSort);
+    sortSelect.addEventListener("change", applyFiltersAndSort);
+    resetBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      genreFilter.value = "";
+      sortSelect.value = "total_desc";
+      applyFiltersAndSort();
+    });
+
+    loadConsoleData();
+  </script>
+</body>
+</html>
