@@ -6,15 +6,15 @@
 <title>Retrogames Score – Retroplaying BCN</title>
 <style>
 :root {
-  --bg: #0f1218;
-  --panel: #161a23;
-  --panel2: #1e2430;
-  --text: #e8ecf3;
-  --muted: #9aa3b2;
-  --accent: #3fa9f5;
-  --accent-hover: #2a8ddb;
-  --border: #2a3242;
-  --link: #64c7ff;
+  --bg: #ffffff;
+  --panel: #f5f6f8;
+  --panel2: #eaecef;
+  --text: #111318;
+  --muted: #5a6270;
+  --accent: #e03030;        /* rojo para detalles */
+  --accent-hover: #c02626;
+  --border: #dcdfe6;
+  --link: #0066cc;
 }
 * { box-sizing: border-box; }
 body {
@@ -30,7 +30,7 @@ a:hover { text-decoration: underline; }
 /* Header / Nav */
 .site-header {
   border-bottom: 1px solid var(--border);
-  background: #0b0e15;
+  background: #f9fafb;
 }
 .nav {
   max-width: 1100px;
@@ -48,10 +48,10 @@ a:hover { text-decoration: underline; }
   gap: 10px;
   font-weight: 700;
   font-size: 0.95rem;
-  color: #eaf3ff;
+  color: #111318;
 }
 .nav-brand a {
-  color: #eaf3ff;
+  color: #111318;
 }
 .nav-links {
   display: flex;
@@ -76,18 +76,33 @@ h1 {
   margin: 0 0 6px;
   font-size: clamp(1.7rem, 4vw, 2.3rem);
   letter-spacing: 0.2px;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 4px;
 }
+/* Subrayado rojo estilo Retroplaying BCN */
+h1::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
 .intro {
   color: var(--muted);
   margin: 0 0 14px;
   font-size: 0.95rem;
 }
 .method {
-  background: #121620;
+  background: #f7f8fa;
   border-left: 3px solid var(--accent);
   border-radius: 8px;
   padding: 12px 14px;
-  color: #d5dce8;
+  color: #222630;
   margin: 12px 0 18px;
   font-size: 0.92rem;
 }
@@ -117,16 +132,16 @@ input, select, button {
   border-radius: 8px;
   padding: 10px 12px;
   border: 1px solid var(--border);
-  background: #0d1119;
+  background: #ffffff;
   color: var(--text);
   min-width: 0;
 }
 button {
   background: var(--accent);
-  color: #071019;
+  color: #ffffff;
   font-weight: 700;
   cursor: pointer;
-  border: 1px solid #2a3f55;
+  border: 1px solid #b82424;
 }
 button:hover {
   background: var(--accent-hover);
@@ -159,7 +174,7 @@ button:hover {
   height: 150px;
   object-fit: cover;
   border-radius: 8px;
-  background: #0b0e15;
+  background: #f2f4f7;
   flex: none;
   border: 1px solid var(--border);
 }
@@ -193,16 +208,17 @@ button:hover {
 }
 .score strong {
   font-size: 1.15rem;
-  color: #eaf3ff;
+  color: #111318;
 }
 
 .note, .reasoning {
   margin-top: 12px;
   padding: 10px 12px;
-  background: #121620;
+  background: #f7f8fa;
   border-radius: 8px;
   border-left: 3px solid var(--accent);
   font-size: 0.92rem;
+  color: #222630;
 }
 .reasoning h3 {
   font-size: 0.95rem;
