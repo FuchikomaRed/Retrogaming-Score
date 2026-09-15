@@ -1,19 +1,287 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Retrogames Score</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Retrogames Score – Retroplaying BCN</title>
 <style>
-:root{--bg:#10131c;--panel:#1b2130;--panel2:#252d40;--text:#f4f6fb;--muted:#aeb7c9;--accent:#72d6ff;--border:#39445c}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;line-height:1.45}main{max-width:1100px;margin:auto;padding:28px 18px 50px}h1{margin:0 0 8px;font-size:clamp(1.7rem,4vw,2.5rem)}.intro{color:var(--muted);margin-top:0}.method{background:#141a26;border-left:3px solid var(--accent);border-radius:9px;padding:13px 15px;color:#dce6f7;margin:14px 0 18px}.panel,.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px}.panel{margin:18px 0}.filters{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}label{display:grid;gap:6px;font-weight:700}input,select,button{font:inherit;border-radius:9px;padding:11px 13px;border:1px solid var(--border)}input,select{background:#0d1119;color:var(--text);min-width:0}button{background:var(--accent);color:#071019;font-weight:700;cursor:pointer}.secondary{background:var(--panel2);color:var(--text);margin-top:14px}.status{color:var(--muted);font-size:.92rem;margin-top:10px}.cards{display:grid;gap:16px}.card-head{display:flex;gap:16px}.cover{width:118px;height:150px;object-fit:cover;border-radius:8px;background:#0b0e15;flex:none}.title{margin:0 0 4px;font-size:1.25rem}.meta{color:var(--muted);font-size:.92rem}.scores{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.score{background:var(--panel2);padding:9px;border-radius:9px;text-align:center}.score small{display:block;color:var(--muted)}.score strong{font-size:1.25rem}.note,.reasoning{margin-top:14px;padding:12px;background:#141a26;border-radius:9px;border-left:3px solid var(--accent)}.reasoning h3{font-size:1rem;margin:0 0 7px}.reasoning p{margin:0}.hidden{display:none}.footer{text-align:center;color:var(--muted);margin-top:30px;font-size:.9rem}@media(max-width:700px){.filters{grid-template-columns:1fr}.card-head{flex-direction:column}.cover{width:100%;height:210px}.scores{grid-template-columns:repeat(2,1fr)}}
-</style></head><body><main>
+:root {
+  --bg: #0f1218;
+  --panel: #161a23;
+  --panel2: #1e2430;
+  --text: #e8ecf3;
+  --muted: #9aa3b2;
+  --accent: #3fa9f5;
+  --accent-hover: #2a8ddb;
+  --border: #2a3242;
+  --link: #64c7ff;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  line-height: 1.5;
+}
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Header / Nav */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  background: #0b0e15;
+}
+.nav {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #eaf3ff;
+}
+.nav-brand a {
+  color: #eaf3ff;
+}
+.nav-links {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+}
+.nav-links a {
+  color: var(--muted);
+}
+.nav-links a:hover {
+  color: var(--text);
+}
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 18px 40px;
+}
+
+h1 {
+  margin: 0 0 6px;
+  font-size: clamp(1.7rem, 4vw, 2.3rem);
+  letter-spacing: 0.2px;
+}
+.intro {
+  color: var(--muted);
+  margin: 0 0 14px;
+  font-size: 0.95rem;
+}
+.method {
+  background: #121620;
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: #d5dce8;
+  margin: 12px 0 18px;
+  font-size: 0.92rem;
+}
+
+.panel, .card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.panel { margin: 16px 0; }
+
+.filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+}
+label {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+input, select, button {
+  font: inherit;
+  border-radius: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  background: #0d1119;
+  color: var(--text);
+  min-width: 0;
+}
+button {
+  background: var(--accent);
+  color: #071019;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid #2a3f55;
+}
+button:hover {
+  background: var(--accent-hover);
+}
+
+.secondary {
+  background: var(--panel2);
+  color: var(--text);
+  margin-top: 12px;
+  border: 1px solid var(--border);
+}
+
+.status {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+.cards {
+  display: grid;
+  gap: 16px;
+}
+
+.card-head {
+  display: flex;
+  gap: 16px;
+}
+.cover {
+  width: 118px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #0b0e15;
+  flex: none;
+  border: 1px solid var(--border);
+}
+.title {
+  margin: 0 0 4px;
+  font-size: 1.2rem;
+}
+.meta {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.scores {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+.score {
+  background: var(--panel2);
+  padding: 8px;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+.score small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.score strong {
+  font-size: 1.15rem;
+  color: #eaf3ff;
+}
+
+.note, .reasoning {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: #121620;
+  border-radius: 8px;
+  border-left: 3px solid var(--accent);
+  font-size: 0.92rem;
+}
+.reasoning h3 {
+  font-size: 0.95rem;
+  margin: 0 0 6px;
+}
+.reasoning p {
+  margin: 0;
+}
+.hidden { display: none; }
+
+.footer {
+  text-align: center;
+  color: var(--muted);
+  margin-top: 28px;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 760px) {
+  .nav { flex-direction: column; align-items: flex-start; }
+  .filters { grid-template-columns: 1fr; }
+  .card-head { flex-direction: column; }
+  .cover { width: 100%; height: 210px; }
+  .scores { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav">
+    <div class="nav-brand">
+      <a href="https://www.retroplayingbcn.es" target="_blank" rel="noopener">Retroplaying BCN</a>
+      <span>·</span>
+      <span>Retrogames Score</span>
+    </div>
+    <div class="nav-links">
+      <a href="https://www.retroplayingbcn.es" target="_blank" rel="noopener">Inicio</a>
+      <a href="https://www.retroplayingbcn.es/p/acerca-de.html" target="_blank" rel="noopener">Acerca de</a>
+      <a href="https://www.retroplayingbcn.es/search/label/Gu%C3%ADas" target="_blank" rel="noopener">Guías</a>
+      <a href="https://www.retroplayingbcn.es/search/label/An%C3%A1lisis" target="_blank" rel="noopener">Análisis</a>
+    </div>
+  </div>
+</header>
+
+<main>
 <h1 id="pageTitle">Retrogames Score</h1>
 <p class="intro">Busca un juego por palabra clave y selecciona la plataforma.</p>
-<div class="method"><strong>Sobre las puntuaciones:</strong> Las valoraciones se basan principalmente en la percepción popular de los jugadores y en el consenso de la comunidad retro. Se tienen en cuenta la calidad técnica, la música, el control, el diseño de juego y las particularidades de cada versión regional. No pretenden sustituir una crítica individual, sino ofrecer una referencia coherente para comparar títulos de distintas plataformas.</div>
-<section class="panel"><div class="filters"><label for="search">Nombre del juego<input id="search" type="search" placeholder="Ej.: Sonic, Mario, Zelda..."></label><label for="platform">Plataforma<select id="platform"><option value="megadrive">Mega Drive (PAL)</option><option value="snes">Super Nintendo (PAL)</option></select></label><button id="searchBtn">Buscar</button></div><div class="status" id="status">Cargando catálogo…</div></section>
-<section id="results" class="cards"></section><p class="footer">Creado por FuchikomaRed</p>
-</main><script>
+
+<div class="method">
+  <strong>Sobre las puntuaciones:</strong> Las valoraciones se basan principalmente en la percepción popular de los jugadores y en el consenso de la comunidad retro. Se tienen en cuenta la calidad técnica, la música, el control, el diseño de juego y las particularidades de cada versión regional. No pretenden sustituir una crítica individual, sino ofrecer una referencia coherente para comparar títulos de distintas plataformas.
+</div>
+
+<section class="panel">
+  <div class="filters">
+    <label for="search">Nombre del juego
+      <input id="search" type="search" placeholder="Ej.: Sonic, Mario, Zelda...">
+    </label>
+    <label for="platform">Plataforma
+      <select id="platform">
+        <option value="megadrive">Mega Drive</option>
+        <option value="snes">Super Nintendo</option>
+      </select>
+    </label>
+    <button id="searchBtn">Buscar</button>
+  </div>
+  <div class="status" id="status">Cargando catálogo…</div>
+</section>
+
+<section id="results" class="cards"></section>
+
+<p class="footer">
+  Creado por FuchikomaRed · Integrado en <a href="https://www.retroplayingbcn.es" target="_blank" rel="noopener">Retroplaying BCN</a>
+</p>
+</main>
+
+<script>
 const platforms={
-  megadrive:{label:'Mega Drive (PAL)',file:'megadrive_scoring.csv'},
-  snes:{label:'Super Nintendo (PAL)',file:'snes_scoring.csv'}
+  megadrive:{label:'Mega Drive',file:'megadrive_scoring.csv'},
+  snes:{label:'Super Nintendo',file:'snes_scoring.csv'}
 };
 let games=[];
 const $=id=>document.getElementById(id);
@@ -56,12 +324,12 @@ function render(list){
         </div>
       </div>
       <div class="scores">
-        <div class="score"><small>Gráficos PAL</small><strong>${score(g.graphics_pal)}</strong></div>
-        <div class="score"><small>Música PAL</small><strong>${score(g.music_pal)}</strong></div>
-        <div class="score"><small>Jugabilidad PAL</small><strong>${score(g.gameplay_pal)}</strong></div>
-        <div class="score"><small>Total PAL</small><strong>${score(g.total_pal)}</strong></div>
+        <div class="score"><small>Gráficos</small><strong>${score(g.graphics_pal)}</strong></div>
+        <div class="score"><small>Música</small><strong>${score(g.music_pal)}</strong></div>
+        <div class="score"><small>Jugabilidad</small><strong>${score(g.gameplay_pal)}</strong></div>
+        <div class="score"><small>Total</small><strong>${score(g.total_pal)}</strong></div>
       </div>
-      ${g.notes_pal_ntsc_j?`<div class="note"><strong>Nota PAL / NTSC-J:</strong> ${esc(g.notes_pal_ntsc_j)}</div>`:''}
+      ${g.notes_pal_ntsc_j?`<div class="note"><strong>Nota regional:</strong> ${esc(g.notes_pal_ntsc_j)}</div>`:''}
       ${g.score_reasoning?`<button class="secondary" data-reason="${i}">Ver motivos de la puntuación</button><div class="reasoning hidden" id="reason-${i}"><h3>Motivos de la puntuación</h3><p>${esc(g.score_reasoning)}</p></div>`:''}
     </article>
   `).join('');
@@ -101,4 +369,6 @@ $('searchBtn').onclick=search;
 $('search').onkeydown=e=>{if(e.key==='Enter')search()};
 $('platform').onchange=load;
 load();
-</script></body></html>
+</script>
+</body>
+</html>
